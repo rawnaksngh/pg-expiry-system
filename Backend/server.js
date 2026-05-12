@@ -90,7 +90,14 @@ app.get("/", async (req, res) => {
     });
   }
 });
+app.get("/", (req, res) => {
 
+  res.json({
+    success: true,
+    message: "Backend Running Successfully"
+  });
+
+});
 // SERVER START
 app.listen(5000, () => {
 
