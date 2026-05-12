@@ -32,6 +32,7 @@ require("./routes/transactions");
 
 // MIDDLEWARE
 app.use(cors());
+
 app.use(express.json());
 
 // API ROUTES
@@ -55,7 +56,10 @@ app.use(
   productUploadRoutes
 );
 
-app.use("/api/sales", salesRoutes);
+app.use(
+  "/api/sales",
+  salesRoutes
+);
 
 app.use(
   "/api/analytics",
@@ -74,8 +78,8 @@ app.use(
   )
 );
 
-// REACT ROUTES
-app.get("/*", (req, res) => {
+// REACT FRONTEND ROUTES
+app.use((req, res) => {
 
   res.sendFile(
 
