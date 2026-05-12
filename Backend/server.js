@@ -1,14 +1,10 @@
-const riskAnalyticsRoutes =
-require("./routes/riskAnalytics");
-const transactionRoutes =
-require("./routes/transactions");
-const analyticsRoutes =
-require("./routes/analytics");
-const productUploadRoutes =
-require("./routes/productUpload");
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
+
 const pool = require("./db");
+
+const app = express();
 
 // ROUTES
 const authRoutes = require("./routes/auth");
@@ -16,23 +12,28 @@ const retailerRoutes = require("./routes/retailers");
 const productRoutes = require("./routes/products");
 const dashboardRoutes = require("./routes/dashboard");
 
-// TEMP TEST ROUTES
 const retailerUploadRoutes =
 require("./routes/retailerUpload");
+
+const productUploadRoutes =
+require("./routes/productUpload");
 
 const salesRoutes =
 require("./routes/sales");
 
-const app = express();
+const analyticsRoutes =
+require("./routes/analytics");
+
+const riskAnalyticsRoutes =
+require("./routes/riskAnalytics");
+
+const transactionRoutes =
+require("./routes/transactions");
 
 // MIDDLEWARE
 app.use(cors());
 app.use(express.json());
 
-app.use(
-  "/api/transactions",
-  transactionRoutes
-);
 // API ROUTES
 app.use("/api/auth", authRoutes);
 
@@ -41,63 +42,51 @@ app.use("/api/retailers", retailerRoutes);
 app.use("/api/products", productRoutes);
 
 app.use("/api/dashboard", dashboardRoutes);
-app.use(
-  "/api/risk",
-  riskAnalyticsRoutes
-);
-// BULK UPLOAD ROUTES
+
+app.use("/api/risk", riskAnalyticsRoutes);
+
 app.use(
   "/api/retailer-upload",
   retailerUploadRoutes
 );
 
 app.use(
-  "/api/sales",
-  salesRoutes
-);
-app.use(
-  "/api/analytics",
-  analyticsRoutes
-);
-app.use(
   "/api/product-upload",
   productUploadRoutes
 );
 
-// ROOT ROUTE
-app.get("/", async (req, res) => {
+app.use("/api/sales", salesRoutes);
 
-  try {
+app.use(
+  "/api/analytics",
+  analyticsRoutes
+);
 
-    const result = await pool.query(
-      "SELECT NOW()"
-    );
+app.use(
+  "/api/transactions",
+  transactionRoutes
+);
 
-    res.json({
-      success: true,
-      message:
-        "Database Connected Successfully",
-      serverTime: result.rows[0]
-    });
+// FRONTEND BUILD
+app.use(
+  express.static(
+    path.join(__dirname, "build")
+  )
+);
 
-  } catch (err) {
+// REACT ROUTES
+app.get("*", (req, res) => {
 
-    console.log(err);
+  res.sendFile(
 
-    res.status(500).json({
-      success: false,
-      error: err.message
-    });
-  }
+    path.join(
+      __dirname,
+      "build",
+      "index.html"
+    )
+  );
 });
-app.get("/", (req, res) => {
 
-  res.json({
-    success: true,
-    message: "Backend Running Successfully"
-  });
-
-});
 // SERVER START
 const PORT =
   process.env.PORT || 5000;
